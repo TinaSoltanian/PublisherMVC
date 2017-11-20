@@ -1,0 +1,181 @@
+﻿@model MVCPublishersProject.Models.Publisher
+
+
+@*This is for jquery*@
+<script src="~/Scripts/jquery-3.2.1.js"></script>
+
+@*This is for jquery UI, for Calender control*@
+<script src="~/Scripts/jquery-ui-1.8.11.js"></script>
+
+@*This is for JSON*@
+<script src="../../Scripts/json2.js" type="text/javascript"></script>
+
+@*These are for DataTables*@
+<script src="~/Scripts/DataTables-1.10.16/js/jquery.dataTables.js"></script>
+<script src="~/Scripts/Select-1.2.3/js/dataTables.select.js"></script>
+<script src="~/Scripts/Buttons-1.4.2/js/dataTables.buttons.js"></script>
+<link href="~/Scripts/DataTables-1.10.16/css/jquery.dataTables.css" rel="stylesheet" />
+<link href="~/Scripts/Buttons-1.4.2/css/buttons.dataTables.css" rel="stylesheet" />
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var table = $('#tbl').DataTable({
+            responsive: true,
+            select: true,
+            columnDefs: [{ targets: 0, visible: false }]
+        });
+
+        $('#button').click(function () {
+            table.row('.selected').remove().draw(false);
+        });
+    });
+
+
+
+    function Add() {
+        if (($('#Number').val().length > 0) && ($('#Phone option:selected').text() != ' -- Select an Item -- ')) {
+            $('#tbl').dataTable().fnAddData([$('#Phone').val(), $('#Phone option:selected').text(), $('#Number').val()]);
+            $('#PhoneType_ID').val("")
+            $('#Number').val("")
+        }
+    }
+
+    function Sales_save() {
+        var detail = {"Phonetype_ID": "", "Number": "", "Publisher_ID" : "" };
+        var main = { "ID": "", "Title": "", "Address": "", "Phone": [] };
+
+        main.Title = $('#Title').val();
+        main.Address = $('#Address').val();
+        main.ID = $('#ID').val();
+
+        var oTable = $('#tbl').DataTable().rows().data();
+        for (var i = 0; i < oTable.length; i++) {
+            detail.Phonetype_ID = oTable[i][0];
+            detail.Number = oTable[i][2];
+            detail.Publisher_ID = main.ID;
+            main.Phone.push(detail);
+
+            detail = { "Phonetype_ID": "", "Number": "", "Publisher_ID": "" };
+        }
+
+        $.ajax({
+            url: '/Publisher/Create',
+            data: JSON.stringify(main),
+            type: 'POST',
+            contentType: 'application/json;',
+            dataType: 'json',
+            success: function (result) {
+
+                if (result.Success == "1") {
+                    window.location.href = "/Publisher/Index";
+                }
+                else {
+                    alert(result.ex);
+                }
+            }
+        });
+    }
+
+</script>
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+    <fieldset>
+        <legend>Publisher</legend>
+
+        @if (Model != null)
+        {
+
+            <input type="hidden" id="ID" name="ID" value="@Model.ID" />
+        }
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Title)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Title)
+            @Html.ValidationMessageFor(model => model.Title)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Address)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Address)
+            @Html.ValidationMessageFor(model => model.Address)
+        </div>
+
+
+        <h2>Add Phone</h2>
+
+        <label>Phont Type</label>
+
+        @Html.DropDownList("Phone",
+                new SelectList((IEnumerable<MVCPublishersProject.Models.PhoneType>)ViewBag.Phones, "ID", "Title"),
+                " -- Select an Item -- ")
+
+        <label>Number :</label>
+        @Html.TextBox("Number")
+
+        <input type="button" value="Add" onclick="Add()" />
+        <br />
+        <br />
+
+        <table class="tbl" id="tbl">
+            <thead>
+                <tr>
+                    <th visible="false"></th>
+                    <th>Phone Type</th>
+                    <th>Number</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model != null)
+                {
+                    foreach (var item in Model.Phone)
+                    {
+                        <tr>
+                            <td visible="false">
+                                @Html.DisplayTextFor(i => item.PhoneType.ID)
+                            </td>
+                            <td>
+                                @Html.DisplayTextFor(i => item.PhoneType.Title)
+                            </td>
+                            <td>
+                                @Html.DisplayTextFor(i => item.Number)
+                            </td>
+                           
+                        </tr>
+                    }
+                }
+
+            </tbody>
+
+        </table>
+
+        <br />
+
+        <input type="button" id="button" class="button" value="Delete Selected Row" onclick="DeleteRow()" />
+
+    </fieldset>
+    <input type="button" value="Sales Save" onclick="Sales_save()" />
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+
+

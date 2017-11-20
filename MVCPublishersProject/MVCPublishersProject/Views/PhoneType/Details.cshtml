@@ -1,0 +1,20 @@
+﻿@model MVCPublishersProject.Models.PhoneType
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<fieldset>
+    <legend>PhoneType</legend>
+
+    <div class="display-label">Title</div>
+    <div class="dislay-field">@Model.Title</div>
+</fieldset>
+
+<p>
+    @Html.ActionLink("Edit","Edit", new { id = Model.ID})
+    @Html.ActionLink("Back to list", "Index")
+</p>
+

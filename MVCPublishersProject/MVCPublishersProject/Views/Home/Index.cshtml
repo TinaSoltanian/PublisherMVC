@@ -1,0 +1,15 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<h2>@ViewBag.Message</h2>
+<p>
+    <div>
+        <ul id="mainmenu">
+            <li>@Html.ActionLink("Activity Type", "Index", "ActivityType")</li>
+            <li>@Html.ActionLink("Phone Type", "Index", "PhoneType")</li>
+            <li>@Html.ActionLink("Author", "Index", "Author")</li>
+            <li>@Html.ActionLink("Publisher", "Index", "Publisher")</li>
+        </ul>
+    </div>
+</p>

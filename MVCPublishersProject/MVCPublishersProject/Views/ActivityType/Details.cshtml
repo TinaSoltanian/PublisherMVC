@@ -1,0 +1,19 @@
+﻿@model MVCPublishersProject.Models.ActivityType
+
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<fieldset>
+    <legend>Activity Type</legend>
+
+    <div class="display-label">Title</div>
+    <div class="display-field">@Model.Title</div>
+</fieldset>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
